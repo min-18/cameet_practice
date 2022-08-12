@@ -28,3 +28,14 @@ class Room(models.Model):
 
     def __str__(self):
         return f"{self.room_title}"
+
+class Apply(models.Model):
+    user_id = models.ForeignKey(User, related_name='join', on_delete=models.CASCADE)
+    room_id = models.ForeignKey(Room, related_name='participant', on_delete=models.CASCADE)
+    apply_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['apply_time']
+
+    def __str__(self):
+        return f"# {self.room_id.room_interest} : {self.room_id.room_title} / 참여자 : {self.user_id.name}"
