@@ -6,6 +6,7 @@ from .models import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from rest_framework.renderers import JSONRenderer
 
 
 class UserList(APIView):
@@ -19,6 +20,7 @@ class UserList(APIView):
         # 많은 유저 받아오려면 (many=True) 써줘야 한다! 이렇게 에러뜨는 경우가 생각보다 많다...
         serializer = UserSerializer(users, many=True)
 
+        # renderer_classes = [JSONRenderer]
         # serializer2 = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
 

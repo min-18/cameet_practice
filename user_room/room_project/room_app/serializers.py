@@ -14,6 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
     # rooms = RoomSerializer(many=True, read_only=True)
     # rooms = serializers.StringRelatedField(many=True)
 
+    # SerializerMethodField() 의 속성으로 method_name='' 을 줄 수 있다.
+    # 없다면 함수명은 get_(변수명)이어야 올바르게 작동한다.
     user_create_rooms = serializers.SerializerMethodField()
 
     class Meta:
@@ -21,6 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
         # fields = '__all__'      # 필요한 필드만 하고 싶을 땐 리스트 형태로 작성. ; fields = ['id', 'title']
         # User객체에 없는, room정보도 SerializerMethodField()로 가져온 변수도 넣어주기!
         fields = ('name', 'age', 'created', 'user_create_rooms')
+        # 읽기만 할 수 있는 것들 ; 이걸 명시해주면 읽기만 하니까 속도가 더 빠른 듯.
+        read_only_fields = ('name', 'age','created')
 
     # get_(변수명)이어야 올바르게 작동한다.
     def get_user_create_rooms(self, obj):
@@ -37,10 +41,14 @@ class UserSerializer(serializers.ModelSerializer):
 
             room_list.append(room_json)
 
-        print(room_list)
+        # print(room_list)
         # 문제) 지금 room_list 는 json으로 시리얼라이즈 되지 않았다,,, ->객체들을 json 형태로 하나씩 담아주는 방법 선택
 
         return room_list
+
+    # def get_user_create_rooms(self, obj):
+    #     return obj.rooms
+
 
 
 
