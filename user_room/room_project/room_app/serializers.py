@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         # 받아온 객체가 쿼리셋 형태라 json 형태로 풀어주기위해 (안해주면 시리얼라이즈 안됏다고 오류뜸...)
         for room in obj.rooms.all():
-            print(room)
+            # print(obj)
             room_json = {
                 'room_id': room.id,
                 'room_title' : room.room_title,
@@ -53,7 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         # 받아온 user객체를 join이라는 related_name으로 역참조해서 apply 객체로 연결
         for apply in obj.join.all():
-            print(apply)
 
             # apply객체롤 통해 룸정보에 접근하기 위해 room_id로 room 객체에 가서 각각의 룸정보 뽑아옴.
             apply_json = {
@@ -70,28 +69,38 @@ class UserSerializer(serializers.ModelSerializer):
 # 룸정보 안에 유저정보까지
 class RoomSerializer(serializers.ModelSerializer):
 
+    host = serializers.SerializerMethodField()
+
     # user_id = serializers.StringRelatedField()
     
     # 중요) 변수명을 모델에서 쓴 변수명으로 통일해줘야 함.(FK필드)
     # 참고로 방의 호스트(user)는 한명이니 many=True 써주면 안된다.
-    user_key = UserSerializer()
-    print(user_key)
 
+    # userserializer를 쓰면 시리얼라이저 안에 담긴 투머치한 정보까지 줘서 문제,,,
+    # user_key = UserSerializer()
     # user_key = UserSerializer(read_only = True)    
 
     class Meta:
         model = Room
         # fields = [ 'room_title', 'user']
-        fields = '__all__'
+        fields = ('id', 'room_title', 'room_interest', 'room_place','room_date','room_time','room_headcount','room_status','room_created_time','host')
         # fields = ['id', 'user_key', 'room_title', 'room_interest']
         # unique_together = ['user_id', 'room_title']
+    
+    def get_host(self, obj):
 
+        # 호스트는 객체가 하나라 for문이 아니라 그냥 json 형태로 담아주기만 하면 됨.
+        user_json = {
+                'user_id': obj.user_key.name,
+                'user_name' : obj.user_key.age,
+                'user_age' : obj.user_key.created,
+            }
+        return user_json
 
+# 이건 안씀.
 class ApplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apply
         fields = '__all__'
-
-
 
